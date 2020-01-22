@@ -10,14 +10,15 @@ Authors@R:
 Imports:
     digest,
     NLP,
-    tm (>= 0.6),
     utils
+Depends: 
+    tm (>= 0.6)
 Description: Provides 'tm' Source functions to create corpora from
   articles scraped by the RISJbot webcrawler
   <https://github.com/pmyteh/RISJbot>. It reads JSONLines files
   including both text and metadata.
 License: GPL-3
-Encoding: UTF-8
 LazyData: true
 URL: http://github.com/pmyteh/tm.plugin.risjbot
 BugReports: http://github.com/pmyteh/tm.plugin.risjbot/issues
+
