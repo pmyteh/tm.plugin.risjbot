@@ -19,3 +19,5 @@ Description: Provides 'tm' Source functions to create corpora from
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+URL: http://github.com/pmyteh/tm.plugin.risjbot
+BugReports: http://github.com/pmyteh/tm.plugin.risjbot/issues
