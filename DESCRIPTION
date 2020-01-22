@@ -1,0 +1,21 @@
+Package: tm.plugin.risjbot
+Title: Import Articles from RISJbot Using the 'tm' Text Mining Framework
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Tom",
+           family = "Nicholls",
+           role = c("aut", "cre"),
+           email = "tom.nicholls@bsg.ox.ac.uk",
+           comment = c(ORCID = "0000-0002-6971-8614"))
+Imports:
+    digest,
+    NLP,
+    tm (>= 0.6),
+    utils
+Description: Provides 'tm' Source functions to create corpora from
+  articles scraped by the RISJbot webcrawler
+  <https://github.com/pmyteh/RISJbot>. It reads JSONLines files
+  including both text and metadata.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
