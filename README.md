@@ -27,7 +27,7 @@ devtools::install_github("pmyteh/tm.plugin.risjbot")
 
 ## Example
 
-This example shows you how to create a `tm::VCorpus` object usin this package's
+This example shows you how to create a `tm::VCorpus` object using this package's
 source function:
 
 ``` r
