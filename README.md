@@ -12,6 +12,10 @@ articles from the web, using sites' own sitemaps and RSS feeds as a source. It
 produces a number of output formats, including JSONLines files which this
 package can read into `tm` sources.
 
+To allows better integration with other `tm` data sources, arbitrary mappings
+are allowed between field names in the RISJbot JSONLines file and metadata field
+names in the eventual `tm::PlainTextDocument`.
+
 ## Installation
 
 You can install the development version of tm.plugin.risjbot from
@@ -23,12 +27,12 @@ devtools::install_github("pmyteh/tm.plugin.risjbot")
 
 ## Example
 
-This example shows you how to create a `tm` object usin this package's source
-function:
+This example shows you how to create a `tm::VCorpus` object usin this package's
+source function:
 
 ``` r
-library(tm)
 library(tm.plugin.risjbot)
-corp <- VCorpus(RISJbotSource('/path/to/file/data.jl'))
+s <- RISJbotSource('input.jl')
+corp <- VCorpus(s)
 ```
 
