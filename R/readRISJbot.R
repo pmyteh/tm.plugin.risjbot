@@ -28,21 +28,27 @@ readRISJbot <- function(mappings) {
                 function(x) d[[mappings[[x]]]],
                 simplify=FALSE,
                 USE.NAMES=TRUE)
-    
-    if(is.null(m[["id"]])) {
-      # Generate a unique id. This is the source name plus the object's date, plus
-      # the file sequence number, plus a shortened hash of the metadata to ensure
-      # it is actually unique.
-      datestamp <- d[["modtime"]]
-      if (is.null(datestamp)) datestamp <- d[["firstpubtime"]]
-      if (is.null(datestamp)) datestamp <- d[["fetchtime"]]
-      if (is.null(datestamp)) {
-        warning(elem$uri, ":", id, ": No modtime, firstpubtime, or fetchtime field found. Using today's date to make the document ID.")
-        datestamp <- Sys.Date()
+
+    if(is.null(m[["datetimestamp"]])) {
+      m[["datetimestamp"]] <- d[["modtime"]]
+      if (is.null(m[["datetimestamp"]])) m[["datetimestamp"]] <- d[["firstpubtime"]]
+      if (is.null(m[["datetimestamp"]])) {
+        m[["datetimestamp"]] <- d[["fetchtime"]]
+        if (!is.null(m[["datetimestamp"]])) {
+          warning(elem$uri, ":", id, ": No modtime or firstpubtime field found. Using fetchtime field to make the document datetimestamp, which may not be accurate.\n")
+        } else {
+          warning(elem$uri, ":", id, ": No modtime, firstpubtime, or fetchtime field found. Using today's date and time to make the document datetimestamp.\n")
+          m[["datetimestamp"]] <- Sys.time()
+        }
       }
-      
+    }
+
+    if(is.null(m[["id"]])) {
+      # Generate a unique id. This is the source name plus the object's date,
+      # plus the file sequence number, plus a shortened hash of the metadata to
+      # ensure it is actually unique.
       m[["id"]] <- paste0(gsub("[^[:alnum:]]", "", substr(d[["source"]], 1, 10)),
-                          strftime(datestamp, format="%Y%m%d"),
+                          strftime(m[["datetimestamp"]], format="%Y%m%d"),
                           id,
                           "-",
                           substr(digest::digest(m, algo="md5", raw=FALSE), 1, 8)
