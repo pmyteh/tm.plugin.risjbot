@@ -12,8 +12,11 @@
 #'   JSONLines file should be used for the main text of the output document.
 #'
 #'   If mappings are not provided, `content` is collected from the `bodytext`
-#'   field and all other input fields are carried over to the output document
-#'   with their original names.
+#'   field, all other input fields are carried over to the output document
+#'   with their original names, and the `datetimestamp` output field is taken as
+#'   the first available of the following: `datetimestamp` input field,
+#'   `modtime` input field, `firstpubtime` input field, `fetchtime` input field,
+#'   or (if all else fails) the current date and time, with a warning.
 #'
 #' @details The returned documents have IDs constructed to be unique under all
 #'   normal circumstances. This is based on the input file's `source` field (if
