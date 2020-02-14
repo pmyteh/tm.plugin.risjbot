@@ -9,7 +9,8 @@ Authors@R:
            comment = c(ORCID = "0000-0002-6971-8614"))
 Imports:
     digest,
-    jsonlite
+    jsonlite,
+    lubridate
 Depends: 
     tm (>= 0.6)
 Description: Provides a tm Source function to create corpora from articles

@@ -41,6 +41,7 @@ readRISJbot <- function(mappings) {
           m[["datetimestamp"]] <- Sys.time()
         }
       }
+      m[["datetimestamp"]] <- lubridate::ymd_hms(m[["datetimestamp"]])
     }
 
     if(is.null(m[["id"]])) {
