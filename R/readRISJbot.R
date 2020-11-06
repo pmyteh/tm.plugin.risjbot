@@ -15,7 +15,7 @@ readRISJbot <- function(mappings) {
     d <- jsonlite::fromJSON(elem$content)
     
     if (is.null(mappings)) {
-      mappings <- names(d)[names(d) != "bodytext"]
+      mappings <- names(d)[!(names(d) %in% c("bodytext", "headline", "source"))]
       names(mappings) <- mappings
       contentfield <- "bodytext"
     } else {
@@ -54,6 +54,27 @@ readRISJbot <- function(mappings) {
                           "-",
                           substr(digest::digest(m, algo="md5", raw=FALSE), 1, 8)
       )
+    }
+    
+    # When constructing a PlainTextDocument, tm does special handling for its
+    # 'standard' metadata fields: author, datetimestamp, description, heading,
+    # id, language, and origin.
+    #
+    # Unfortunately, it does so using "if(!is.null(meta$origin))" etc., with
+    # the $ notation running the risk of partial matching against other elements
+    # when the original field is absent. (In particular, where there is an
+    # 'originalurl' field in the RISJbot data, but no 'origin' found). There
+    # shouldn't be any other clashes in standard RISJbot output.
+    # The following is a fairly gross hack to avoid this problem.
+    if (is.null(m[["author"]]) & !is.null(d[["bylines"]])) 
+      m[["author"]] <- paste(as.character(d[["bylines"]]), collapse=", ")
+    if (is.null(m[["description"]])) 
+      m[["description"]] <- d[["summary"]]
+    if (is.null(m[["heading"]]))
+      m[["heading"]] <- d[["headline"]]
+    if (is.null(m[["origin"]])) {
+      m[["origin"]] <- d[["source"]]
+      if(is.null(m[["origin"]])) m[["origin"]] <- elem$uri
     }
 
     PlainTextDocument(x = content, meta = m)
