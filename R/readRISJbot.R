@@ -6,7 +6,7 @@
 #' @seealso [RISJbotSource]
 #' @importFrom tm PlainTextDocument
 #' @export
-readRISJbot <- function(mappings) {
+readRISJbot <- function(mappings, dateprefer, datedefault) {
   if(!is.null(mappings) && is.null(mappings[["content"]])) {
     stop("If provided, the mappings list must have a mapping for 'content'.")
   }
@@ -28,21 +28,6 @@ readRISJbot <- function(mappings) {
                 function(x) d[[mappings[[x]]]],
                 simplify=FALSE,
                 USE.NAMES=TRUE)
-
-    if(is.null(m[["datetimestamp"]])) {
-      m[["datetimestamp"]] <- d[["modtime"]]
-      if (is.null(m[["datetimestamp"]])) m[["datetimestamp"]] <- d[["firstpubtime"]]
-      if (is.null(m[["datetimestamp"]])) {
-        m[["datetimestamp"]] <- d[["fetchtime"]]
-        if (!is.null(m[["datetimestamp"]])) {
-          warning(elem$uri, ":", id, ": No modtime or firstpubtime field found. Using fetchtime field to make the document datetimestamp, which may not be accurate.\n")
-        } else {
-          warning(elem$uri, ":", id, ": No modtime, firstpubtime, or fetchtime field found. Using today's date and time to make the document datetimestamp.\n")
-          m[["datetimestamp"]] <- Sys.time()
-        }
-      }
-      m[["datetimestamp"]] <- lubridate::ymd_hms(m[["datetimestamp"]])
-    }
 
     if(is.null(m[["id"]])) {
       # Generate a unique id. This is the source name plus the object's date,
@@ -76,6 +61,30 @@ readRISJbot <- function(mappings) {
       m[["origin"]] <- d[["source"]]
       if(is.null(m[["origin"]])) m[["origin"]] <- elem$uri
     }
+
+    for (s in dateprefer) {
+      m[["datetimestamp"]] <- d[[s]]
+      if (!is.null(m[["datetimestamp"]])) break
+    }
+    
+    if (is.null(m[["datetimestamp"]])) {
+      if (datedefault) {
+        warning(elem$uri, ":", id, ": None of the given date input fields found. Using today's date and time to make 'datetimestamp'.\n")
+        m[["datetimestamp"]] <- Sys.time()
+      } else stop(elem$uri, ":", id, ": Can't find any of the given date input fields.")
+    }
+    # m[["datetimestamp"]] <- d[["modtime"]]
+    # if (is.null(m[["datetimestamp"]])) m[["datetimestamp"]] <- d[["firstpubtime"]]
+    # if (is.null(m[["datetimestamp"]])) {
+    #   m[["datetimestamp"]] <- d[["fetchtime"]]
+    #   if (!is.null(m[["datetimestamp"]])) {
+    #     warning(elem$uri, ":", id, ": No modtime or firstpubtime field found. Using fetchtime field to make the document datetimestamp, which may not be accurate.\n")
+    #   } else {
+    #     warning(elem$uri, ":", id, ": No modtime, firstpubtime, or fetchtime field found. Using today's date and time to make the document datetimestamp.\n")
+    #     m[["datetimestamp"]] <- Sys.time()
+    #   }
+    # }
+    m[["datetimestamp"]] <- lubridate::ymd_hms(m[["datetimestamp"]])
 
     PlainTextDocument(x = content, meta = m)
   }

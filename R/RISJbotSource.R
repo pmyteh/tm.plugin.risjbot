@@ -14,16 +14,23 @@
 #'  If mappings are not provided, `content` is collected from the `bodytext`
 #'  field, all other input fields are carried over to the output document with
 #'  their original names.
+#'@param dateprefer A character vector setting the priority for which input
+#'  field is used to generate the `datetimestamp` output field. The earliest
+#'  field present will be used. Default:
+#'  `c("datetimestamp", "modtime", "firstpubtime", "fetchtime")`
+#'@param datedefault Boolean. If true, the current date will be used with a
+#'  warning message if none of the fields in `dateprefer` produce a valid
+#'  result. If false, we will stop with an error. Default: `TRUE`.
 #'
 #'@details An attempt is made to fill up the standard `tm` metadata fields if
 #'  explicit mappings are not provided (or produce NULL). The `datetimestamp`
-#'  output field is taken as the first available of the following:
-#'  `datetimestamp` input field, `modtime` input field, `firstpubtime` input
-#'  field, `fetchtime` input field, or (if all else fails) the current date and
-#'  time, with a warning. `author` is taken by concatenating (with commas) the
-#'  `bylines` input field. `description` is taken from the input `summary`
-#'  field, and `heading` from `headline`. `origin` is taken from `source`,
-#'  failing which the filename of the input file is used. 
+#'  output field is taken as the first available of the fields given in the
+#'  `dateprefer` parameter, falling back to the current date if the
+#'  `datedefault` parameter is true and otherwise stopping with an error.
+#'  `author` is taken by concatenating (with commas) the `bylines` input field.
+#'  `description` is taken from the input `summary` field, and `heading` from
+#'  `headline`. `origin` is taken from `source`, failing which the filename of
+#'  the input file is used.
 #'
 #'  The returned documents have IDs constructed to be unique under all normal
 #'  circumstances. This is based on the input file's `source` field (if
@@ -44,11 +51,16 @@
 #'}
 #'@importFrom tm getElem
 #'@export
-RISJbotSource <- function(x, mappings=NULL) {
+RISJbotSource <- function(x,
+                          mappings=NULL,
+                          dateprefer=c("datetimestamp", "modtime",
+                                       "firstpubtime", "fetchtime"),
+                          datedefault=TRUE) {
   content <- readLines(x, encoding="UTF-8")
   
   tm::SimpleSource(encoding='UTF-8', length=length(content), content=content,
-                   uri=x, reader=readRISJbot(mappings), class="RISJbotSource")
+                   uri=x, reader=readRISJbot(mappings, dateprefer, datedefault),
+                   class="RISJbotSource")
 }
 
 #' @export
